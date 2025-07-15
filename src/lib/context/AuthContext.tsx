@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import type { User } from "@/lib/types/user";
 
 interface AuthContextType {
@@ -21,142 +22,83 @@ interface RegisterData {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
 
-  // Check for existing session on mount
-  useEffect(() => {
-    const checkExistingSession = () => {
-      try {
-        if (typeof window !== 'undefined') {
-          const savedUser = localStorage.getItem("educonnect_user");
-          if (savedUser) {
-            const parsedUser = JSON.parse(savedUser);
-            setUser(parsedUser);
-          }
-        }
-      } catch (error) {
-        console.error("Error loading saved user:", error);
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem("educonnect_user");
-        }
-      } finally {
-        setIsLoading(false);
+  // Transform NextAuth session to our User format
+  const user: User | null = session?.user ? {
+    id: session.user.id,
+    email: session.user.email,
+    firstName: session.user.name?.split(' ')[0] || '',
+    lastName: session.user.name?.split(' ').slice(1).join(' ') || '',
+    nationality: "Nigerian",
+    verified: true,
+    role: (session.user.role as 'Student' | 'Admin' | 'Counselor') || 'Student',
+    createdAt: new Date().toISOString(),
+    profilePicture: session.user.image || undefined,
+    qualifications: [],
+    languageProficiencies: [
+      {
+        language: "English",
+        level: "Native",
       }
-    };
-
-    checkExistingSession();
-  }, []);
+    ],
+    studyPreferences: {
+      fieldsOfInterest: [],
+      preferredCountries: [],
+      preferredDegreeTypes: [],
+      preferredLanguages: ["English"],
+      budgetRange: {
+        min: 0,
+        max: 20000,
+      },
+      accommodationPreference: "No Preference",
+      startDate: "Flexible",
+      studyMode: "No Preference",
+      scholarshipRequired: false,
+    },
+    savedUniversities: [],
+    applications: [],
+    counselingSessions: [],
+  } : null;
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // For demo purposes, accept any email/password combination
-    if (email && password) {
-      const mockUser: User = {
-        id: "user-001",
+    try {
+      const result = await signIn("credentials", {
         email,
-        firstName: email.split("@")[0] || "User",
-        lastName: "Demo",
-        nationality: "Nigerian",
-        verified: true,
-        role: "Student",
-        createdAt: new Date().toISOString(),
-        qualifications: [],
-        languageProficiencies: [
-          {
-            language: "English",
-            level: "Native",
-          }
-        ],
-        studyPreferences: {
-          fieldsOfInterest: [],
-          preferredCountries: [],
-          preferredDegreeTypes: [],
-          preferredLanguages: ["English"],
-          budgetRange: {
-            min: 0,
-            max: 20000,
-          },
-          accommodationPreference: "No Preference",
-          startDate: "Flexible",
-          studyMode: "No Preference",
-          scholarshipRequired: false,
-        },
-        savedUniversities: [],
-        applications: [],
-        counselingSessions: [],
-      };
+        password,
+        redirect: false,
+      });
 
-      setUser(mockUser);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem("educonnect_user", JSON.stringify(mockUser));
-      }
-      setIsLoading(false);
-      return true;
+      return result?.ok || false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-
-    setIsLoading(false);
-    return false;
   };
 
   const register = async (userData: RegisterData): Promise<boolean> => {
-    setIsLoading(true);
+    try {
+      // In a real app, you'd make an API call to register the user
+      // For now, we'll simulate registration
+      console.log('Registering user:', userData);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      // After successful registration, automatically sign them in
+      const result = await signIn("credentials", {
+        email: userData.email,
+        password: userData.password,
+        redirect: false,
+      });
 
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      nationality: "Nigerian",
-      verified: false,
-      role: "Student",
-      createdAt: new Date().toISOString(),
-      qualifications: [],
-      languageProficiencies: [
-        {
-          language: "English",
-          level: "Native",
-        }
-      ],
-      studyPreferences: {
-        fieldsOfInterest: [],
-        preferredCountries: [],
-        preferredDegreeTypes: [],
-        preferredLanguages: ["English"],
-        budgetRange: {
-          min: 0,
-          max: 20000,
-        },
-        accommodationPreference: "No Preference",
-        startDate: "Flexible",
-        studyMode: "No Preference",
-        scholarshipRequired: false,
-      },
-      savedUniversities: [],
-      applications: [],
-      counselingSessions: [],
-    };
-
-    setUser(newUser);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("educonnect_user", JSON.stringify(newUser));
+      return result?.ok || false;
+    } catch (error) {
+      console.error('Registration error:', error);
+      return false;
     }
-    setIsLoading(false);
-    return true;
   };
 
-  const logout = () => {
-    setUser(null);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem("educonnect_user");
-    }
+  const logout = async () => {
+    await signOut({ redirect: false });
   };
 
   return (

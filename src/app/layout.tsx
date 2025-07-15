@@ -1,48 +1,46 @@
-import type { Metadata } from "next";
-import { Inter, Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import ClientBody from "./ClientBody";
-import { metadata as siteMetadata } from "./metadata";
-import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/lib/context/AuthContext";
-import { AdminProvider } from "@/lib/context/AdminContext";
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { AuthProvider } from '@/lib/context/AuthContext';
+import { AdminProvider } from '@/lib/context/AdminContext';
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as SonnerToaster } from '@/components/ui/sonner';
+import ClientBody from './ClientBody';
+import NextAuthProvider from '@/components/providers/NextAuthProvider';
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
+const inter = Inter({ subsets: ['latin'] });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = siteMetadata;
+export const metadata: Metadata = {
+  title: 'EduConnect Africa - Connecting Nigerian Students with African Universities',
+  description: 'Discover personalized university recommendations, qualification equivalency information, and education counseling services across Africa.',
+  keywords: ['education', 'universities', 'Africa', 'Nigeria', 'study abroad', 'counseling'],
+  authors: [{ name: 'EduConnect Africa' }],
+  openGraph: {
+    title: 'EduConnect Africa',
+    description: 'Connecting Nigerian Students with African Universities',
+    type: 'website',
+    locale: 'en_US',
+  },
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${geistSans.variable} ${geistMono.variable}`}
-    >
-      <body suppressHydrationWarning className="antialiased min-h-screen">
-        <AuthProvider>
-          <AdminProvider>
-            <ClientBody>{children}</ClientBody>
-            <Toaster />
-          </AdminProvider>
-        </AuthProvider>
-      </body>
+    <html lang="en">
+      <ClientBody className={inter.className}>
+        <NextAuthProvider>
+          <AuthProvider>
+            <AdminProvider>
+              {children}
+              <Toaster />
+              <SonnerToaster />
+            </AdminProvider>
+          </AuthProvider>
+        </NextAuthProvider>
+      </ClientBody>
     </html>
   );
 }
