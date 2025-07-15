@@ -1,0 +1,11 @@
+const personalizedResults = useMemo(() => {
+    if (personalized && user) {
+      return getPersonalizedMatches(filteredUniversities);
+    }
+    return filteredUniversities.map(uni => ({
+      university: uni,
+      matchPercentage: 0,
+      strengths: [],
+      matchFactors: { academic: 0, financial: 0, location: 0, community: 0 }
+    }));
+  }, [filteredUniversities, personalized, user, getPersonalizedMatches]);
