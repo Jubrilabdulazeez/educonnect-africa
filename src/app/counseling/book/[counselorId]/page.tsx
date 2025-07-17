@@ -207,11 +207,15 @@ export default function BookConsultationPage() {
 
     setIsBooking(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Redirect to payment page with booking details
+    const bookingParams = new URLSearchParams({
+      type: selectedType,
+      date: format(selectedDate, "yyyy-MM-dd"),
+      time: selectedTime,
+      notes: notes || ""
+    });
 
-    setBookingComplete(true);
-    setIsBooking(false);
+    router.push(`/counseling/payment/${counselorId}?${bookingParams.toString()}`);
   };
 
   if (bookingComplete) {
@@ -493,10 +497,10 @@ export default function BookConsultationPage() {
                   <Button
                     onClick={handleBooking}
                     disabled={isBooking}
-                    className="w-full bg-gradient-green hover:opacity-90"
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
                     size="lg"
                   >
-                    {isBooking ? "Booking..." : `Confirm Booking - ${formatPrice(selectedPrice)}`}
+                    {isBooking ? "Proceeding..." : `Proceed to Payment - ${formatPrice(selectedPrice)}`}
                   </Button>
 
                   <p className="text-xs text-muted-foreground text-center">

@@ -109,31 +109,33 @@ export default function SignUpPage() {
     setIsLoading(true);
 
     try {
-      // In a real application, you'd make an API call to register the user
-      // For demo purposes, we'll simulate this and then sign them in
-      console.log('Registering user:', formData);
+      // For demo purposes, we'll just sign them in with existing demo credentials
+      // In a real app, you'd register the user first, then sign them in
+      console.log('Demo registration for:', formData);
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // After successful registration, automatically sign them in
+      // Simulate registration success and auto sign-in with demo account
       const result = await signIn("credentials", {
-        email: formData.email,
-        password: formData.password,
+        email: "test@test.com",
+        password: "password",
         redirect: false,
       });
 
       if (result?.ok) {
         toast({
           title: "Welcome to EduConnect Africa!",
-          description: "Your account has been created successfully.",
+          description: "You've been signed in with a demo account.",
         });
         router.push("/questionnaire");
       } else {
-        setError("Registration failed. Please try again.");
+        // Try creating a session with the provided credentials anyway
+        toast({
+          title: "Demo Mode",
+          description: "Please use the demo credentials to sign in.",
+        });
+        router.push("/auth/signin");
       }
     } catch (error) {
-      setError("An unexpected error occurred. Please try again.");
+      setError("Please use the demo sign-in instead.");
       console.error("Registration error:", error);
     } finally {
       setIsLoading(false);

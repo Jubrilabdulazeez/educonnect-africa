@@ -220,22 +220,109 @@ export default function SignInPage() {
               >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
+
+              {/* Quick Test Login */}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={async () => {
+                  setEmail("test@test.com");
+                  setPassword("password");
+                  setIsLoading(true);
+                  try {
+                    const result = await signIn("credentials", {
+                      email: "test@test.com",
+                      password: "password",
+                      redirect: false,
+                    });
+
+                    if (result?.error) {
+                      setError("Demo login failed");
+                    } else if (result?.ok) {
+                      toast({
+                        title: "Demo Login Successful!",
+                        description: "You're now signed in with the demo account.",
+                      });
+                      router.push(callbackUrl);
+                    }
+                  } catch (error) {
+                    setError("Demo login failed");
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                disabled={isLoading}
+              >
+                🚀 Quick Demo Login
+              </Button>
             </form>
 
             <Separator />
 
             {/* Demo Accounts */}
             <div className="bg-muted/50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium mb-3">Demo Accounts:</h4>
+              <h4 className="text-sm font-medium mb-3">Quick Demo Access:</h4>
               <div className="space-y-2 text-xs">
-                <div>
-                  <strong>Student:</strong> student@test.com / student123
+                <div className="flex justify-between items-center">
+                  <span><strong>Easy Demo:</strong> test@test.com / password</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-6 px-2"
+                    onClick={() => {
+                      setEmail("test@test.com");
+                      setPassword("password");
+                    }}
+                  >
+                    Use
+                  </Button>
                 </div>
-                <div>
-                  <strong>Counselor:</strong> counselor@test.com / counselor123
+                <div className="flex justify-between items-center">
+                  <span><strong>Student:</strong> student@test.com / student123</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-6 px-2"
+                    onClick={() => {
+                      setEmail("student@test.com");
+                      setPassword("student123");
+                    }}
+                  >
+                    Use
+                  </Button>
                 </div>
-                <div>
-                  <strong>Admin:</strong> admin@educonnect.com / admin123
+                <div className="flex justify-between items-center">
+                  <span><strong>Counselor:</strong> counselor@test.com / counselor123</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-6 px-2"
+                    onClick={() => {
+                      setEmail("counselor@test.com");
+                      setPassword("counselor123");
+                    }}
+                  >
+                    Use
+                  </Button>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span><strong>Admin:</strong> admin@educonnect.com / admin123</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-6 px-2"
+                    onClick={() => {
+                      setEmail("admin@educonnect.com");
+                      setPassword("admin123");
+                    }}
+                  >
+                    Use
+                  </Button>
                 </div>
               </div>
             </div>

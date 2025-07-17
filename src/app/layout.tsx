@@ -5,7 +5,6 @@ import { AuthProvider } from '@/lib/context/AuthContext';
 import { AdminProvider } from '@/lib/context/AdminContext';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
-import ClientBody from './ClientBody';
 import NextAuthProvider from '@/components/providers/NextAuthProvider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -30,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ClientBody className={inter.className}>
+      <body className={inter.className}>
         <NextAuthProvider>
           <AuthProvider>
             <AdminProvider>
@@ -40,7 +39,7 @@ export default function RootLayout({
             </AdminProvider>
           </AuthProvider>
         </NextAuthProvider>
-      </ClientBody>
+      </body>
     </html>
   );
 }

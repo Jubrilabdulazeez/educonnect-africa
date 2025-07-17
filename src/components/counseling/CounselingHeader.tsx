@@ -1,12 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MessageSquare, Video, Star, CalendarClock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/context/AuthContext";
 
-export function CounselingHeader() {
+interface CounselingHeaderProps {
+  onServiceSelect?: (serviceType: string) => void;
+}
+
+export function CounselingHeader({ onServiceSelect }: CounselingHeaderProps) {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+
   const services = [
     {
+      id: "video",
       title: "Video Consultation",
       icon: Video,
       price: "₦15,000",

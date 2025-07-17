@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { UniversityCard } from "@/components/university/UniversityCard";
@@ -38,7 +38,7 @@ function UniversitiesContent() {
   const [showQuickQuestionnaire, setShowQuickQuestionnaire] = useState(false);
 
   // Personalized matching algorithm
-  const getPersonalizedMatches = (universities: UniversityCardType[]): UniversityMatchResult[] => {
+  const getPersonalizedMatches = useCallback((universities: UniversityCardType[]): UniversityMatchResult[] => {
     if (!user?.studyPreferences) {
       return universities.map(uni => ({
         university: uni,
@@ -91,7 +91,7 @@ function UniversitiesContent() {
         matchFactors: factors,
       };
     }).sort((a, b) => b.matchPercentage - a.matchPercentage);
-  };
+  }, [user]);
 
   // Filtering logic
   const filteredUniversities = useMemo(() => {
@@ -130,7 +130,7 @@ function UniversitiesContent() {
       strengths: [],
       matchFactors: { academic: 0, financial: 0, location: 0, community: 0 }
     }));
-  }, [filteredUniversities, personalized, user]);
+  }, [filteredUniversities, personalized, user, getPersonalizedMatches]);
 
   const handleCountryFilter = (country: string) => {
     setQuickFilters(prev => ({
