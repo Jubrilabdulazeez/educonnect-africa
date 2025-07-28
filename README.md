@@ -1,5 +1,5 @@
 # EduConnect Africa
-
+Initial Video Submission: https://drive.google.com/file/d/1r3o2EPdROME0-E7hGYW2L784SAqfV_nD/view?usp=sharing
 A comprehensive platform connecting Nigerian students with African universities, featuring personalized recommendations, qualification equivalency tools, and education counseling services.
 
 ## 🚀 Features
